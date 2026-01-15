@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Évaluation de l'impact d'un incident majeur</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        /* Styles des catégories */
+        .category {
+            margin-bottom: 30px;
+            padding: 15px;
+            border-radius: 5px;
+            border: 2px solid;
+        }
+        
+        .business {
+            border-color: #e74c3c;
+            background-color: #fdecea;
+        }
+        
+        .client {
+            border-color: #f39c12;
+            background-color: #fef5e6;
+        }
+        
+        .operationnel {
+            border-color: #3498db;
+            background-color: #ebf5fb;
+        }
+        
+        .reputationnel {
+            border-color: #2ecc71;
+            background-color: #e8f8f0;
+        }
+        
+        .financier {
+            border-color: #9b59b6;
+            background-color: #f5eef8;
+        }
+        
+        .category h2 {
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        /* Styles des questions */
+        .question {
+            margin-bottom: 20px;
+        }
+        
+        .question label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        select {
+            padding: 8px;
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+        }
+
+        input[type="number"] {
+            padding: 8px;
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+        }
+        
+        .note {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Boutons */
+        button {
+            padding: 12px 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #1a252f;
+        }
+        
+        .reset-btn {
+            background: #7f8c8d;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        
+        .reset-btn:hover {
+            background: #666;
+        }
+        
+        .copy-btn {
+            background: #27ae60;
+        }
+        
+        .copy-btn:hover {
+            background: #219653;
+        }
+        
+        /* Résultats */
+        #results {
+            margin-top: 40px;
+            padding: 20px;
+            border-radius: 5px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+        }
+        
+        .severity {
+            font-weight: bold;
+            margin-right: 10px;
+            padding: 3px 8px;
+            border-radius: 3px;
+            display: inline-block;
+            min-width: 50px;
+            text-align: center;
+        }
+        
+        .SEV1 {
+            color: #c0392b;
+            background: #f9d6d2;
+        }
+        
+        .SEV2 {
+            color: #d35400;
+            background: #fae5d3;
+        }
+        
+        .SEV3 {
+            color: #f1c40f;
+            background: #fff9c4;
+        }
+        
+        .no-impact {
+            color: #666;
+        }
+        
+        .results-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .results-list li {
+            margin-bottom: 10px;
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .global-severity {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .category-results {
+            margin-top: 20px;
+        }
+        
+        .question-result {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .question-result:last-child {
+            border-bottom: none;
+        }
+        
+        .question-label {
+            font-weight: normal;
+        }
+        
+        .severity-badge {
+            font-weight: bold;
+        }
+        
+        /* Score */
+        .impact-score {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 4px;
+        }
+        
+        .score-value {
+            font-size: 2em;
+        }
+        
+        .category-score {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+        
+        .score-bar-container {
+            width: 100%;
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+        
+        .score-bar {
+            height: 100%;
+            border-radius: 5px;
+            background: #2c3e50;
+        }
+        
+        .question-points {
+            font-size: 0.8em;
+            color: #666;
+            margin-left: 10px;
+        }
+        
+        #copyResult {
+            display: none;
+            white-space: pre;
+            font-family: monospace;
+            margin-top: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Style amélioré pour le message de copie */
+        #copyResult {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 4px;
+            border-left: 4px solid #2e7d32;
+            font-size: 0.9em;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Évaluation de l'impact d'un incident majeur</h1>
+    <button class="reset-btn" onclick="resetForm()">Réinitialiser le formulaire</button>
+    
+    <form id="impactForm">
+        <!-- Catégorie 1 : Impact Business (🟥) -->
+        <div class="category business">
+            <h2>1. Impact Business (🟥)</h2>
+            <div class="question">
+                <label for="q1_1">Q1.1 Estimation des pertes de réservations :</label>
+                <input type="number" id="q1_1" min="0" placeholder="Indiquez le montant en k€">
+                <div class="note">Note : Saisissez le montant brut des pertes (en k€). Le score sera calculé automatiquement.</div>
+            </div>
+            <div class="question">
+                <label for="q1_2">Q1.2 Nombre exact d'hôtels impactés :</label>
+                <input type="number" id="q1_2" min="0" placeholder="Ex : 124">
+                <div class="note">Note : Indiquez le nombre réel d'hôtels touchés. Ce nombre sera utilisé pour pondérer dynamiquement le scoring.</div>
+            </div>
+            <div class="question">
+                <label for="q1_3">Q1.3 Risque légal//overbooking :</label>
+                <select id="q1_3">
+                    <option value="none">Aucun risque</option>
+                    <option value="SEV1">Overbooking / RGPD</option>
+                    <option value="SEV2">SLA partenaire / Fonctionnalités importantes</option>
+                    <option value="SEV3">Risque mineur / Outils hôtels</option>
+                </select>
+                <div class="note">Note : Cochez "Aucun risque" si l'incident est uniquement technique, sans impact légal.</div>
+            </div>
+        </div>
+
+        <!-- Catégorie 2 : Impact Client (🟡) -->
+        <div class="category client">
+            <h2>2. Impact Client (🟡)</h2>
+            <div class="question">
+                <label for="q2_1">Q2.1 Clients affectés :</label>
+                <select id="q2_1">
+                    <option value="none">Aucun client touché</option>
+                    <option value="SEV1">>10% ou région clé</option>
+                    <option value="SEV2">Segment spécifique</option>
+                    <option value="SEV3">Cas isolés</option>
+                </select>
+                <div class="note">Note : Estimez la proportion d'utilisateurs impactés par l'incident</div>
+            </div>
+            <div class="question">
+                <label for="q2_2">Q2.2 Dégradation du service :</label>
+                <select id="q2_2">
+                    <option value="none">Aucun impact</option>
+                    <option value="SEV1">Réservation impossible</option>
+                    <option value="SEV2">Ralentissements/paiements échoués</option>
+                    <option value="SEV3">Bugs mineurs</option>
+                </select>
+                <div class="note">Note : Évaluez l'impact sur le parcours client.</div>
+            </div>
+            <div class="question">
+                <label for="q2_3">Q2.3 Satisfaction client :</label>
+                <select id="q2_3">
+                    <option value="none">Aucun changement</option>
+                    <option value="SEV1">Plaintes massives</option>
+                    <option value="SEV2">Hausse des tickets</option>
+                    <option value="SEV3">Impact mineur</option>
+                </select>
+                <div class="note">Note : Consultez les équipes Support pour les données quantitatives.</div>
+            </div>
+        </div>
+
+        <!-- Catégorie 3 : Impact Opérationnel (🟦) -->
+        <div class="category operationnel">
+            <h2>3. Impact Opérationnel (🟦)</h2>
+            <div class="question">
+                <label for="q3_1">Q3.1 Outils internes :</label>
+                <select id="q3_1">
+                    <option value="none">Tout fonctionne</option>
+                    <option value="SEV1">CRM/portail down</option>
+                    <option value="SEV2">Fonctionnalités réduites</option>
+                    <option value="SEV3">Problèmes cosmétiques</option>
+                </select>
+                <div class="note">Note : Ne concerne que les outils sensibles ou nécessitant une haute disponibilité.</div>
+            </div>
+            <div class="question">
+                <label for="q3_2">Q3.2 Charge du support :</label>
+                <select id="q3_2">
+                    <option value="none">Aucune augmentation de charge</option>
+                    <option value="SEV1">Pic de tickets + processus manuels</option>
+                    <option value="SEV2">Charge accrue</option>
+                    <option value="SEV3">Impact mineur</option>
+                </select>
+                <div class="note">Note : Se base sur le volume de tickets en augmentation lors de l'incident.</div>
+            </div>
+            <div class="question">
+                <label for="q3_3">Q3.3 Outils B2B :</label>
+                <select id="q3_3">
+                    <option value="none">Rien à signaler</option>
+                    <option value="SEV1">Extranet down</option>
+                    <option value="SEV2">Instabilités</option>
+                    <option value="SEV3">Dégradation mineure</option>
+                </select>
+                <div class="note">Note : Vérifier auprès des équipes Partenaires si nécessaire.</div>
+            </div>
+        </div>
+
+        <!-- Catégorie 4 : Risque Réputationnel (🟩) -->
+        <div class="category reputationnel">
+            <h2>4. Risque Réputationnel (🟩)</h2>
+            <div class="question">
+                <label for="q4_1">Q4.1 Visibilité publique :</label>
+                <select id="q4_1">
+                    <option value="none">Non visible</option>
+                    <option value="SEV1">Médias/réseaux sociaux</option>
+                    <option value="SEV2">Signalements clients directs</option>
+                    <option value="SEV3">Discussion interne</option>
+                </select>
+                <div class="note">Note : Surveiller les canaux publics et internes.</div>
+            </div>
+            <div class="question">
+                <label for="q4_2">Q4.2 Partenaires stratégiques :</label>
+                <select id="q4_2">
+                    <option value="none">Aucun impact</option>
+                    <option value="SEV1">Grands groupes</option>
+                    <option value="SEV2">Partenaires intermédiaires</option>
+                    <option value="SEV3">Petits partenaires</option>
+                </select>
+                <div class="note">Note : Prioriser les partenaires générant >5% du chiffre d'affaires.</div>
+            </div>
+            <div class="question">
+                <label for="q4_3">Q4.3 Risque cyber :</label>
+                <select id="q4_3">
+                    <option value="none">Aucune menace</option>
+                    <option value="SEV1">DDoS/phishing massif</option>
+                    <option value="SEV2">Incident ciblé</option>
+                    <option value="SEV3">Alerte mineure</option>
+                </select>
+                <div class="note">Note : Voir avec les équipes de Cybersécurité.</div>
+            </div>
+        </div>
+
+        <!-- Catégorie 5 : Impact Financier (🟣) -->
+        <div class="category financier">
+            <h2>5. Impact Financier (🟣)</h2>
+            <div class="question">
+                <label for="q5_1">Q5.1 Commissions/frais :</label>
+                <select id="q5_1">
+                    <option value="none">Aucun impact</option>
+                    <option value="SEV1">Pertes majeures</option>
+                    <option value="SEV2">Pertes modérées</option>
+                    <option value="SEV3">Impact marginal</option>
+                </select>
+                <div class="note">Note : Inclut les pénalités contractuelles et frais exceptionnels.</div>
+            </div>
+        </div>
+
+        <button type="button" onclick="calculateImpact()">Calculer l'Impact</button>
+    </form>
+
+    <div id="results"></div>
+
+    <script>
+        const categories = [
+            { id: "business", name: "Impact Business", emoji: "🟥", weight: 30, questions: [
+                { id: "q1_1", label: "Estimation des pertes de réservations" },
+                { id: "q1_2", label: "Hôtels impactés" },
+                { id: "q1_3", label: "Risque légal/conformité/overbooking" }
+            ]},
+            { id: "client", name: "Impact Client", emoji: "🟡", weight: 25, questions: [
+                { id: "q2_1", label: "Clients affectés" },
+                { id: "q2_2", label: "Dégradation du service" },
+                { id: "q2_3", label: "Satisfaction client" }
+            ]},
+            { id: "operationnel", name: "Impact Opérationnel", emoji: "🟦", weight: 15, questions: [
+                { id: "q3_1", label: "Outils internes" },
+                { id: "q3_2", label: "Charge du support" },
+                { id: "q3_3", label: "Outils B2B" }
+            ]},
+            { id: "reputationnel", name: "Risque Réputationnel", emoji: "🟩", weight: 20, questions: [
+                { id: "q4_1", label: "Visibilité publique" },
+                { id: "q4_2", label: "Partenaires stratégiques" },
+                { id: "q4_3", label: "Risque cyber" }
+            ]},
+            { id: "financier", name: "Impact Financier", emoji: "🟣", weight: 10, questions: [
+                { id: "q5_1", label: "Commissions/frais" }
+            ]}
+        ];
+
+        const severityValues = {
+            "SEV1": 1.0,
+            "SEV2": 0.6,
+            "SEV3": 0.2,
+            "none": 0
+        };
+
+        function getHotelImpactFactor(hotels) {
+            const scale = [
+                { limit: 0, factor: 0 },
+                { limit: 20, factor: 0.1 },
+                { limit: 50, factor: 0.2 },
+                { limit: 100, factor: 0.3 },
+                { limit: 150, factor: 0.4 },
+                { limit: 200, factor: 0.5 },
+                { limit: 250, factor: 0.6 },
+                { limit: 300, factor: 0.7 },
+                { limit: 400, factor: 0.8 },
+                { limit: 500, factor: 0.9 },
+                { limit: 600, factor: 1.0 },
+                { limit: 800, factor: 1.1 },
+                { limit: 1000, factor: 1.2 },
+                { limit: 1500, factor: 1.4 },
+                { limit: 2000, factor: 1.6 }
+            ];
+            const n = Math.max(0, parseInt(hotels) || 0);
+            if (n <= scale[0].limit) return scale[0].factor;
+            for (let i = 0; i < scale.length - 1; i++) {
+                const a = scale[i];
+                const b = scale[i + 1];
+                if (n >= a.limit && n <= b.limit) {
+                    const ratio = (n - a.limit) / (b.limit - a.limit);
+                    return a.factor + ratio * (b.factor - a.factor);
+                }
+            }
+            return scale[scale.length - 1].factor;
+        }
+
+        function resetForm() {
+            document.getElementById('impactForm').reset();
+            document.getElementById('results').innerHTML = '';
+        }
+
+        function getLossPoints(amount) {
+            const loss = parseFloat(amount) || 0;
+            if (loss <= 50) return 2;
+            else if (loss <= 100) return 3;
+            else if (loss <= 150) return 4;
+            else if (loss <= 175) return 5;
+            else if (loss <= 200) return 6;
+            else if (loss <= 300) return 10;
+            else return 10 + Math.floor((loss - 300)/100) + 1; // chaque 100k supplémentaire = +1 point
+        }
+
+        function evaluateCategory(category) {
+            let maxSeverity = null;
+            let categoryScore = 0;
+            const questionResults = category.questions.map(q => {
+                if (q.id === "q1_1") {
+                    const raw = document.getElementById(q.id).value;
+                    const points = getLossPoints(raw);
+                    let severityCode = "SEV3";
+                    if (points >= 10) severityCode = "SEV1";
+                    else if (points >= 6) severityCode = "SEV2";
+                    const questionWeight = category.weight / category.questions.length;
+                    const weightedPoints = points * questionWeight / 10; 
+                    if (!maxSeverity || severityCode === "SEV1" || (severityCode === "SEV2" && maxSeverity !== "SEV1") || (severityCode === "SEV3" && maxSeverity !== "SEV1" && maxSeverity !== "SEV2")) {
+                        maxSeverity = severityCode;
+                    }
+                    return { id: q.id, label: q.label + " (" + raw + " k€)", value: severityCode, points: points, weightedPoints: weightedPoints };
+                }
+                if (q.id === "q1_2") {
+                    const raw = document.getElementById(q.id).value;
+                    const hotels = parseInt(raw, 10);
+                    const nbHotels = isNaN(hotels) ? 0 : hotels;
+                    const factor = getHotelImpactFactor(nbHotels);
+                    let severityCode = "none";
+                    if (nbHotels === 0) severityCode = "none";
+                    else if (nbHotels < 50) severityCode = "SEV3";
+                    else if (nbHotels <= 200) severityCode = "SEV2";
+                    else severityCode = "SEV1";
+                    const questionWeight = category.weight / category.questions.length;
+                    const weightedPoints = factor * questionWeight;
+                    if (severityCode !== "none") {
+                        if (!maxSeverity || severityCode === "SEV1" || (severityCode === "SEV2" && maxSeverity !== "SEV1") || (severityCode === "SEV3" && maxSeverity !== "SEV1" && maxSeverity !== "SEV2")) {
+                            maxSeverity = severityCode;
+                        }
+                    }
+                    return { id: q.id, label: q.label + " (" + nbHotels + " hôtels)", value: severityCode, points: factor, weightedPoints: weightedPoints };
+                }
+                const value = document.getElementById(q.id).value;
+                const points = severityValues[value];
+                const questionWeight = category.weight / category.questions.length;
+                const weightedPoints = points * questionWeight;
+                if (value !== "none") {
+                    if (!maxSeverity || value === "SEV1" || (value === "SEV2" && maxSeverity !== "SEV1") || (value === "SEV3" && maxSeverity !== "SEV1" && maxSeverity !== "SEV2")) {
+                        maxSeverity = value;
+                    }
+                }
+                return { id: q.id, label: q.label, value: value, points: points, weightedPoints: weightedPoints };
+            }).filter(q => q.value !== "none");
+            if (questionResults.length === 0) return null;
+            categoryScore = questionResults.reduce((sum, q) => sum + q.weightedPoints, 0);
+            return { name: category.name, emoji: category.emoji, severity: maxSeverity, questions: questionResults, score: categoryScore, maxPossibleScore: category.weight };
+        }
+
+        function copyFormattedResults() {
+            const globalSeverity = document.querySelector('.global-severity .severity').textContent;
+            const impactScore = document.querySelector('.impact-score .score-value').textContent;
+            let resultText = `Sévérité Globale : ${globalSeverity}\n`;
+            resultText += `Score d'Impact : ${impactScore}\n\n`;
+            const categoryItems = document.querySelectorAll('.results-list li');
+            categoryItems.forEach(item => {
+                const categoryName = item.querySelector('strong').textContent.trim();
+                const categorySeverity = item.querySelector('.severity').textContent;
+                resultText += `    ${categoryName} ${categorySeverity}\n`;
+                const questions = item.querySelectorAll('.question-result');
+                questions.forEach(q => {
+                    const questionLabel = q.querySelector('.question-label').textContent.trim();
+                    const questionSeverity = q.querySelector('.severity-badge').textContent;
+                    resultText += `    ${questionLabel} ${questionSeverity}\n`;
+                });
+            });
+            navigator.clipboard.writeText(resultText).then(() => {
+                const copyResultDiv = document.getElementById('copyResult');
+                copyResultDiv.textContent = "✅ Résultats copiés dans le presse-papiers !";
+                copyResultDiv.style.display = "block";
+                setTimeout(() => { copyResultDiv.style.display = "none"; }, 3000);
+            }).catch(err => {
+                console.error('Erreur lors de la copie : ', err);
+                const textarea = document.createElement('textarea');
+                textarea.value = resultText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                const copyResultDiv = document.getElementById('copyResult');
+                copyResultDiv.textContent = "✅ Résultats copiés (méthode alternative) !";
+                copyResultDiv.style.display = "block";
+                setTimeout(() => { copyResultDiv.style.display = "none"; }, 3000);
+            });
+        }
+
+        function calculateImpact() {
+            let results = [];
+            let globalSeverity = null;
+            let totalScore = 0;
+            let maxPossibleTotalScore = categories.reduce((sum, cat) => sum + cat.weight, 0);
+            categories.forEach(category => {
+                const evaluation = evaluateCategory(category);
+                if (evaluation) {
+                    results.push(evaluation);
+                    totalScore += evaluation.score;
+                    if (!globalSeverity || evaluation.severity === "SEV1" || (evaluation.severity === "SEV2" && globalSeverity !== "SEV1") || (evaluation.severity === "SEV3" && globalSeverity !== "SEV1" && globalSeverity !== "SEV2")) {
+                        globalSeverity = evaluation.severity;
+                    }
+                }
+            });
+            const resultsDiv = document.getElementById("results");
+            if (results.length === 0) {
+                resultsDiv.innerHTML = `<div class="no-impact">Aucun impact détecté (toutes les catégories sont à "Aucun impact").</div>`;
+                return;
+            }
+            const finalScore = Math.round(totalScore);
+            let html = `
+                <div class="global-severity">
+                    Sévérité Globale : <span class="severity ${globalSeverity}">${globalSeverity}</span>
+                </div>
+                <div class="impact-score">
+                    Score d'Impact : <span class="score-value">${finalScore}/100</span>
+                    <div class="score-bar-container">
+                        <div class="score-bar" style="width: ${finalScore}%"></div>
+                    </div>
+                </div>
+                <ul class="results-list">`;
+            results.forEach(category => {
+                const categoryPercentage = Math.round((category.score / category.maxPossibleScore) * 100);
+                html += `
+                    <li>
+                        <div><strong>${category.emoji} ${category.name}</strong> : 
+                            <span class="severity ${category.severity}">${category.severity}</span>
+                            <div class="category-score">
+                                <span>Score: ${Math.round(category.score)}/${category.maxPossibleScore}</span>
+                                <span>${categoryPercentage}%</span>
+                            </div>
+                            <div class="score-bar-container">
+                                <div class="score-bar" style="width: ${categoryPercentage}%"></div>
+                            </div>
+                        </div>
+                        <div class="category-results">`;
+                category.questions.forEach(q => {
+                    const pointsPercentage = Math.round(q.weightedPoints / (category.maxPossibleScore / category.questions.length) * 100);
+                    html += `
+                        <div class="question-result">
+                            <span class="question-label">${q.label}</span>
+                            <span>
+                                <span class="severity-badge ${q.value}">${q.value}</span>
+                                <span class="question-points">(${pointsPercentage}%)</span>
+                            </span>
+                        </div>`;
+                });
+                html += `</div></li>`;
+            });
+            html += `</ul>`;
+            html += `<button class="copy-btn" onclick="copyFormattedResults()">Copier le résultat</button>
+                     <div id="copyResult"></div>`;
+            resultsDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
