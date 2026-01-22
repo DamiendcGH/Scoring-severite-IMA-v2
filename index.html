@@ -508,14 +508,16 @@
         }
 
         function getLossPoints(amount) {
-            const loss = parseFloat(amount) || 0;
-            if (loss <= 50) return 2;
-            else if (loss <= 100) return 3;
-            else if (loss <= 150) return 4;
-            else if (loss <= 175) return 5;
-            else if (loss <= 200) return 6;
-            else if (loss <= 300) return 10;
-            else return 10 + Math.floor((loss - 300)/100) + 1; // chaque 100k supplémentaire = +1 point
+    const loss = parseFloat(amount);
+    if (!loss || loss <= 0) return 0;
+
+    if (loss <= 50) return 2;
+    else if (loss <= 100) return 3;
+    else if (loss <= 150) return 4;
+    else if (loss <= 175) return 5;
+    else if (loss <= 200) return 6;
+    else if (loss <= 300) return 10;
+    else return 10 + Math.floor((loss - 300) / 100) + 1;
         }
 
         function evaluateCategory(category) {
@@ -526,8 +528,9 @@
                     const raw = document.getElementById(q.id).value;
                     const points = getLossPoints(raw);
                     let severityCode = "SEV3";
+    			if (points === 0) return null;
                     if (points >= 10) severityCode = "SEV1";
-                    else if (points >= 6) severityCode = "SEV2";
+                    else if (points >= 5) severityCode = "SEV2";
                     const questionWeight = category.weight / category.questions.length;
                     const weightedPoints = points * questionWeight / 10; 
                     if (!maxSeverity || severityCode === "SEV1" || (severityCode === "SEV2" && maxSeverity !== "SEV1") || (severityCode === "SEV3" && maxSeverity !== "SEV1" && maxSeverity !== "SEV2")) {
@@ -564,7 +567,7 @@
                     }
                 }
                 return { id: q.id, label: q.label, value: value, points: points, weightedPoints: weightedPoints };
-            }).filter(q => q.value !== "none");
+            }).filter(q => q !== null && q.value !== "none");
             if (questionResults.length === 0) return null;
             categoryScore = questionResults.reduce((sum, q) => sum + q.weightedPoints, 0);
             return { name: category.name, emoji: category.emoji, severity: maxSeverity, questions: questionResults, score: categoryScore, maxPossibleScore: category.weight };
